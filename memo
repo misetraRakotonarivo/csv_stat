@@ -3,3 +3,12 @@ join fichier1.csv fichier2.csv -o 0,1.2,2.2 | awk '{print $1, $2, $3}'
 top -bn1 | grep "Cpu(s)" | \
            sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | \
            awk '{print 100 - $1"%"}'
+
+
+for f in /home/user/mes_tableaux/*.csv; do
+    if [ -z "$output" ]; then
+        output="$(awk 'BEGIN {OFS="\t"; print "indicateur", "valeur"}')"
+    fi
+    output="$(join -a1 -a2 -o 0 1.2 2.2 -e ' ' <(sort <(tail -n +2 "$f")) <(sort <(tail -n +2 <(echo -e "$output"))))"
+done
+echo "$output" | column -t
