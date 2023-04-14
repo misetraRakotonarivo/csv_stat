@@ -12,3 +12,6 @@ for f in /home/user/mes_tableaux/*.csv; do
     output="$(join -a1 -a2 -o 0 1.2 2.2 -e ' ' <(sort <(tail -n +2 "$f")) <(sort <(tail -n +2 <(echo -e "$output"))))"
 done
 echo "$output" | column -t
+
+
+for pid in $(ps -e -o pid | tail -n +2); do pmap -x $pid | grep -i "total" | awk '{print $2 "\t" $4 "\t" $6}' | while read size rss swap; do echo -e "$pid\t$size\t$rss\t$swap"; done; done | sort -k4 -nr | head -n 11
