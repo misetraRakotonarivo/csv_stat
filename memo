@@ -17,3 +17,13 @@ echo "$output" | column -t
 for pid in $(ps -e -o pid | tail -n +2); do pmap -x $pid | grep -i "total" | awk '{print $2 "\t" $4 "\t" $6}' | while read size rss swap; do echo -e "$pid\t$size\t$rss\t$swap"; done; done | sort -k4 -nr | head -n 11
 
 for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 " " $3}END{ print ""}' $file; done | sort -k 2 -n -r | less
+
+for status_file in /proc/[0-9]*/status; do
+    swap_mem=$(grep VmSwap "$status_file" | awk '{ print $2 }')
+    if [ "$swap_mem" ] && [ "$swap_mem" -gt 0 ]; then
+        pid=$(grep Tgid "$status_file" | awk '{ print $2 }')
+        name=$(grep Name "$status_file" | awk '{ print $2 }')
+        printf "%s\t%s\t%s KB\n" "$pid" "$name" "$swap_mem"
+    fi
+    overall=$((overall+swap_mem))
+done
