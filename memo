@@ -15,3 +15,5 @@ echo "$output" | column -t
 
 
 for pid in $(ps -e -o pid | tail -n +2); do pmap -x $pid | grep -i "total" | awk '{print $2 "\t" $4 "\t" $6}' | while read size rss swap; do echo -e "$pid\t$size\t$rss\t$swap"; done; done | sort -k4 -nr | head -n 11
+
+for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 " " $3}END{ print ""}' $file; done | sort -k 2 -n -r | less
