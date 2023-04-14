@@ -18,12 +18,5 @@ for pid in $(ps -e -o pid | tail -n +2); do pmap -x $pid | grep -i "total" | awk
 
 for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 " " $3}END{ print ""}' $file; done | sort -k 2 -n -r | less
 
-for status_file in /proc/[0-9]*/status; do
-    swap_mem=$(grep VmSwap "$status_file" | awk '{ print $2 }')
-    if [ "$swap_mem" ] && [ "$swap_mem" -gt 0 ]; then
-        pid=$(grep Tgid "$status_file" | awk '{ print $2 }')
-        name=$(grep Name "$status_file" | awk '{ print $2 }')
-        printf "%s\t%s\t%s KB\n" "$pid" "$name" "$swap_mem"
-    fi
-    overall=$((overall+swap_mem))
-done
+for file in /proc/*/status ; do awk '/VmSwap|Name|Pid/{printf "%5s %-15s %-30s\n", $2, $3, $NF}END{ print ""}' $file; done | sort -k 1 -n -r | head -n 11
+
