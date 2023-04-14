@@ -18,5 +18,5 @@ for pid in $(ps -e -o pid | tail -n +2); do pmap -x $pid | grep -i "total" | awk
 
 for file in /proc/*/status ; do awk '/VmSwap|Name/{printf $2 " " $3}END{ print ""}' $file; done | sort -k 2 -n -r | less
 
-for file in /proc/*/status ; do awk '/Name/{name=$2} /Pid/{pid=$2} /VmSwap/{swap=$2} END{if (swap) printf "%-8s %-15s %s\n", pid, name, getline cmd < "/proc/" pid "/cmdline"; close("/proc/" pid "/cmdline"); cmd}' $file; done | sort -k 2 -n -r | head -n 10
+for file in /proc/*/status ; do awk '/Name/{name=$2} /Pid/{pid=$2} /VmSwap/{swap=$2} END{ if (swap && name) print pid, name, swap}' $file; done | sort -k 3 -n -r | head -n 10
 
