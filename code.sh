@@ -1,21 +1,33 @@
-# Initialisation des variables pour stocker les sommes
-total_success=0
-total_failed=0
+#!/bin/bash
 
-# Lecture du fichier ligne par ligne
-while read -r line; do
-  # Vérification si la ligne contient "Success" et "Failed"
-  if [[ $line =~ "Success" && $line =~ "Failed" ]]; then
-    # Utilisation de 'awk' pour extraire les valeurs numériques de "Success" et "Failed"
-    success_value=$(echo "$line" | awk '{print $6}')
-    failed_value=$(echo "$line" | awk '{print $8}')
-    
-    # Ajout des valeurs à la somme totale
-    total_success=$((total_success + success_value))
-    total_failed=$((total_failed + failed_value))
-  fi
-done < votre_fichier.txt
+# Fonction pour calculer la somme des valeurs Success
+calculate_total_success() {
+  local total=0
+  while read -r line; do
+    if [[ $line =~ "Success" ]]; then
+      local value=$(echo "$line" | awk '{print $6}')
+      total=$((total + value))
+    fi
+  done < "$1"
+  echo "$total"
+}
 
-# Affichage de la somme totale
-echo "Somme des valeurs Success : $total_success"
-echo "Somme des valeurs Failed : $total_failed"
+# Fonction pour calculer la somme des valeurs Failed
+calculate_total_failed() {
+  local total=0
+  while read -r line; do
+    if [[ $line =~ "Failed" ]]; then
+      local value=$(echo "$line" | awk '{print $6}')
+      total=$((total + value))
+    fi
+  done < "$1"
+  echo "$total"
+}
+
+# Appel des fonctions pour calculer les sommes
+success_total=$(calculate_total_success "votre_fichier.txt")
+failed_total=$(calculate_total_failed "votre_fichier.txt")
+
+# Affichage des sommes totales
+echo "Somme des valeurs Success : $success_total"
+echo "Somme des valeurs Failed : $failed_total"
