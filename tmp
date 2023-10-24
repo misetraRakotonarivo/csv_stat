@@ -1,1 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?><S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"><SOAP-ENV:Header><wsse:Security xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" SOAP-ENV:actor="urn:cdc:socle:commun:gateway:actor"><wsse:UsernameToken xmlns:wssu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wssu:Id="Id-0000012b0f72c91b-0000000000efae3b-2"><wsse:Username>idApplicationSARA</wsse:Username><wssu:Created>2023-10-24T12:45:00Z</wssu:Created></wsse:UsernameToken></wsse:Security></SOAP-ENV:Header><S:Body xmlns:ns2="http://consulterIAP.iap.dai.isic.cnav/"><ns2:consulterIAP xmlns:ns2="http://consulterIAP.iap.dai.isic.cnav/"><rechercherIAPRequest><nir>1290126124001</nir><nom>OLAGNON</nom><prenom></prenom><dateNaissance>15011929</dateNaissance><codeRegime>1472</codeRegime></rechercherIAPRequest></ns2:consulterIAP></S:Body></S:Envelope>
+
+
+#!/bin/bash
+new_date=$(date -d '2 hours ago' -u +"%Y-%m-%dT%H:%M:%SZ")
+sed -i "s|<wssu:Created>.*</wssu:Created>|<wssu:Created>$new_date</wssu:Created>|g" fichier.xml
