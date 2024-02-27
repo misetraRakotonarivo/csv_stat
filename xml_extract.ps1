@@ -1,21 +1,21 @@
-# Chemin du répertoire racine
-$repertoireRacine = "C:\chemin\vers\votre\repertoire"
+# Chemin vers votre fichier XML
+$cheminFichier = "C:\Chemin\Vers\Votre\Fichier.xml"
 
-# Chemin du fichier CSV de sortie
-$csvOutputPath = "C:\chemin\vers\votre\resultat.csv"
+# Charger le contenu du fichier XML
+$xmlContent = Get-Content -Path $cheminFichier -Raw
 
-# Exécute la recherche des fichiers XML et crée le CSV
-Get-ChildItem -Path $repertoireRacine -Recurse -File -Filter *.xml | Where-Object { $_.DirectoryName -notlike "*OLDIES*" } | ForEach-Object {
-    $locationValue = try {
-        $xmlContent = [xml](Get-Content $_.FullName)
-        $xmlContent.SelectSingleNode('//Location').InnerText
-    } catch {
-        Write-Host "Erreur lors de l'extraction des informations du fichier $($_.FullName): $_"
-    }
+# Charger le fichier XML
+$xml = [xml]$xmlContent
 
-    if ($locationValue -ne $null) {
-        Add-Content -Path $csvOutputPath -Value "$($_.Name),$($_.DirectoryName),$locationValue"
-    }
-}
+# Définir le namespace
+$namespace = New-Object System.Xml.XmlNamespaceManager($xml.NameTable)
+$namespace.AddNamespace("conv", "votre_namespace_conv")
 
-Write-Host "Extraction terminée. Les résultats ont été enregistrés dans $csvOutputPath"
+# Extraire les adresses e-mail
+$emailAddresses = $xml.SelectNodes("//conv:IDPSSODescriptor/conv:ContactPerson/conv:EmailAddress/text()", $namespace) | ForEach-Object { $_.InnerText }
+
+# Joindre les adresses e-mail séparées par des virgules
+$result = $emailAddresses -join ", "
+
+# Afficher le résultat
+Write-Output $result
